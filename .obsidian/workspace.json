@@ -1,0 +1,253 @@
+{
+  "main": {
+    "id": "96b3f14b3abc3cd0",
+    "type": "split",
+    "children": [
+      {
+        "id": "ca285a531e4286d7",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f08b1c16e8786836",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "新标签页"
+            }
+          }
+        ]
+      },
+      {
+        "id": "578d0ecf8acf2651",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b742a06bf3ab71e5",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "深入理解Kubernetes.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "深入理解Kubernetes"
+            }
+          },
+          {
+            "id": "41912fc94e7186e4",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "深入理解Kubernetes.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "深入理解Kubernetes"
+            }
+          }
+        ],
+        "currentTab": 1
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "65bd6c64b14f2587",
+    "type": "split",
+    "children": [
+      {
+        "id": "cee4cd1782daba57",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1f62c630984232e4",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "1aa9a00efa7e6f98",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "ac8552cd0913eefb",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "3f079a809fd1515d",
+    "type": "split",
+    "children": [
+      {
+        "id": "f994b1c2de743017",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "6fb422e6c8c21add",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "反向链接"
+            }
+          },
+          {
+            "id": "d384ae84af02caa4",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "出链"
+            }
+          },
+          {
+            "id": "18a547c9c115e407",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "be770ddc96915268",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "深入剖析Kubernetes (完美目录) (OCR) (张磊) (Z-Library).pdf",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "深入剖析Kubernetes (完美目录) (OCR) (张磊) (Z-Library) 的大纲"
+            }
+          },
+          {
+            "id": "20d393f912268a52",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {},
+              "icon": "git-pull-request",
+              "title": "Source Control"
+            }
+          }
+        ],
+        "currentTab": 4
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "obsidian-git:Open Git source control": false,
+      "pdf-plus:PDF++: Toggle auto-copy": false,
+      "pdf-plus:PDF++: Toggle auto-focus": false,
+      "pdf-plus:PDF++: Toggle auto-paste": false
+    }
+  },
+  "active": "20d393f912268a52",
+  "lastOpenFiles": [
+    "Kubernetes权威指南：从Docker到Kubernetes实践全接触 (龚正等) (Z-Library).pdf",
+    "Kubernetes Operators (Jason Dobies, Joshua Wood) (Z-Library).pdf",
+    "深入剖析Kubernetes (完美目录) (OCR) (张磊) (Z-Library).pdf",
+    "深入理解Kubernetes.md",
+    "未命名",
+    "plugins/obsidian-git-2.32.1/styles.css",
+    "plugins/obsidian-git-2.32.1/tsconfig.json",
+    "plugins/obsidian-git-2.32.1/src/ui/sourceControl/components/treeComponent.svelte",
+    "plugins/obsidian-git-2.32.1/src/ui/sourceControl/components/tooManyFilesComponent.svelte",
+    "plugins/obsidian-git-2.32.1/src/ui/sourceControl/components/stagedFileComponent.svelte",
+    "plugins/obsidian-git-2.32.1/src/ui/sourceControl/components/pulledFileComponent.svelte",
+    "plugins/obsidian-git-2.32.1/src/ui/sourceControl/components/fileComponent.svelte",
+    "plugins/obsidian-git-2.32.1/docs/assets/third-party-windows-git.png",
+    "plugins/obsidian-git-2.32.1/docs/assets/line-author-untracked.png",
+    "plugins/obsidian-git-2.32.1/docs/assets/line-author-tz-viewer-plus0100.png",
+    "plugins/obsidian-git-2.32.1/docs/assets/line-author-tz-utc0000.png",
+    "plugins/obsidian-git-2.32.1/docs/assets/line-author-tz-config.png",
+    "plugins/obsidian-git-2.32.1/docs/assets/line-author-tz-author-local.png",
+    "plugins/obsidian-git-2.32.1/docs/assets/line-author-text-color.png",
+    "plugins/obsidian-git-2.32.1/docs/assets/line-author-text-color-normal.png",
+    "plugins/obsidian-git-2.32.1/docs/assets/line-author-text-color-muted.png",
+    "plugins/obsidian-git-2.32.1/docs/assets/line-author-soft-unintrusive-ux.gif",
+    "plugins/obsidian-git-2.32.1/docs/dev/LineAuthorFeature.md",
+    "plugins/obsidian-git-2.32.1/docs/Tips-and-Tricks.md",
+    "plugins/obsidian-git-2.32.1/docs/Start here.md",
+    "plugins/obsidian-git-2.32.1/docs/Line Authoring.md",
+    "plugins/obsidian-git-2.32.1/docs/Integration with other tools.md",
+    "plugins/obsidian-git-2.32.1/docs/Installation.md",
+    "plugins/obsidian-git-2.32.1/docs/Getting Started.md",
+    "plugins/obsidian-git-2.32.1/docs/Features.md",
+    "plugins/obsidian-git-2.32.1/docs/Common issues.md",
+    "plugins/obsidian-git-2.32.1/docs/Authentication.md",
+    "plugins/obsidian-git-2.32.1/README.md",
+    "plugins/obsidian-git-2.32.1/CHANGELOG.md",
+    "未命名.canvas",
+    "未命名 1.md"
+  ]
+}
