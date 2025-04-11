@@ -1,1 +1,6 @@
-{}
+{
+  "accentColor": "#6495ed",
+  "nativeMenus": false,
+  "baseFontSizeAction": true,
+  "baseFontSize": 14
+}

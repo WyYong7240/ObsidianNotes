@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "软件部署/FRP的部署.md",
+                "file": "LanguageLearn/Go.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "FRP的部署"
+              "title": "Go"
             }
           }
         ]
@@ -127,7 +127,7 @@
               "state": {
                 "sortOrder": "frequency",
                 "useHierarchy": true,
-                "showSearch": false,
+                "showSearch": true,
                 "searchQuery": ""
               },
               "icon": "lucide-tags",
@@ -140,13 +140,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "深入理解Kubernetes.md",
-                "followCursor": false,
-                "showSearch": false,
+                "file": "LanguageLearn/Go.md",
+                "followCursor": true,
+                "showSearch": true,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "深入理解Kubernetes 的大纲"
+              "title": "Go 的大纲"
             }
           },
           {
@@ -164,7 +164,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 236.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -177,13 +177,17 @@
       "obsidian-git:Open Git source control": false,
       "pdf-plus:PDF++: Toggle auto-copy": false,
       "pdf-plus:PDF++: Toggle auto-focus": false,
-      "pdf-plus:PDF++: Toggle auto-paste": false
+      "pdf-plus:PDF++: Toggle auto-paste": false,
+      "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "f08b1c16e8786836",
+  "active": "20d393f912268a52",
   "lastOpenFiles": [
-    "深入理解Kubernetes.md",
+    "LanguageLearn",
     "软件部署/FRP的部署.md",
+    "LanguageLearn/Go.md",
+    "Test.md",
+    "深入理解Kubernetes.md",
     "软件部署",
     "深入剖析Kubernetes (完美目录) (OCR) (张磊) (Z-Library).pdf",
     "Kubernetes权威指南：从Docker到Kubernetes实践全接触 (龚正等) (Z-Library).pdf",
@@ -193,7 +197,6 @@
     "plugins/obsidian-git-2.32.1/src/ui/sourceControl/components/treeComponent.svelte",
     "plugins/obsidian-git-2.32.1/src/ui/sourceControl/components/tooManyFilesComponent.svelte",
     "plugins/obsidian-git-2.32.1/src/ui/sourceControl/components/stagedFileComponent.svelte",
-    "plugins/obsidian-git-2.32.1/src/ui/sourceControl/components/pulledFileComponent.svelte",
     "plugins/obsidian-git-2.32.1/docs/assets/third-party-windows-git.png",
     "plugins/obsidian-git-2.32.1/docs/assets/line-author-untracked.png",
     "plugins/obsidian-git-2.32.1/docs/assets/line-author-tz-viewer-plus0100.png",

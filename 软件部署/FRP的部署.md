@@ -1,10 +1,14 @@
+---
+tags:
+  - frp
+  - frp部署
+---
 > 版本：0.61.2
 > 以代理内网服务为例，以本地程序方式运行
-> 本例以代理内网的Prometheus监控服务为例，将内网的Prometheus监控服务，能够在公网部署的Grafana中访问到并监控数据
+> **本例以代理内网的Prometheus监控服务为例，将内网的Prometheus监控服务，能够在公网部署的Grafana中访问到并监控数据**
 
 # FRPS部署及配置
 ## 在具有公网IP的服务器上安装frps、frps.toml
-
 ~~~ bash
 wget https://github.com/fatedier/frp/releases/download/v0.61.2/frp_0.61.2_linux_amd64.tar.gz
 
@@ -41,7 +45,6 @@ vim /usr/local/frp/frps.toml
 bindPort = 7000
 
 ~~~ 
-
 ## 启动frps
 
 ~~~ bash
@@ -113,8 +116,8 @@ remotePort = 28080 # 远程frps访问该服务的端口号
 #localPort = 22
 #remotePort = 6000
 ~~~ 
-最终，访问该服务的方式就是http://39.98.76.224:28080
-记得将frps所在公网服务器的对应端口开放，比如7000和28080
+- 最终，访问该服务的方式就是http://39.98.76.224:28080
+	记得将frps所在公网服务器的对应端口开放，比如7000和28080
 ## 启动frps
 
 ~~~ bash
