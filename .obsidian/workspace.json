@@ -11,48 +11,17 @@
             "id": "f08b1c16e8786836",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "软件部署/FRP的部署.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "新标签页"
+              "title": "FRP的部署"
             }
           }
         ]
-      },
-      {
-        "id": "578d0ecf8acf2651",
-        "type": "tabs",
-        "children": [
-          {
-            "id": "b742a06bf3ab71e5",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "深入理解Kubernetes.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "深入理解Kubernetes"
-            }
-          },
-          {
-            "id": "41912fc94e7186e4",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "深入理解Kubernetes.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "深入理解Kubernetes"
-            }
-          }
-        ],
-        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -171,13 +140,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "深入剖析Kubernetes (完美目录) (OCR) (张磊) (Z-Library).pdf",
+                "file": "深入理解Kubernetes.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "深入剖析Kubernetes (完美目录) (OCR) (张磊) (Z-Library) 的大纲"
+              "title": "深入理解Kubernetes 的大纲"
             }
           },
           {
@@ -211,20 +180,20 @@
       "pdf-plus:PDF++: Toggle auto-paste": false
     }
   },
-  "active": "20d393f912268a52",
+  "active": "f08b1c16e8786836",
   "lastOpenFiles": [
+    "深入理解Kubernetes.md",
+    "软件部署/FRP的部署.md",
+    "软件部署",
+    "深入剖析Kubernetes (完美目录) (OCR) (张磊) (Z-Library).pdf",
     "Kubernetes权威指南：从Docker到Kubernetes实践全接触 (龚正等) (Z-Library).pdf",
     "Kubernetes Operators (Jason Dobies, Joshua Wood) (Z-Library).pdf",
-    "深入剖析Kubernetes (完美目录) (OCR) (张磊) (Z-Library).pdf",
-    "深入理解Kubernetes.md",
-    "未命名",
     "plugins/obsidian-git-2.32.1/styles.css",
     "plugins/obsidian-git-2.32.1/tsconfig.json",
     "plugins/obsidian-git-2.32.1/src/ui/sourceControl/components/treeComponent.svelte",
     "plugins/obsidian-git-2.32.1/src/ui/sourceControl/components/tooManyFilesComponent.svelte",
     "plugins/obsidian-git-2.32.1/src/ui/sourceControl/components/stagedFileComponent.svelte",
     "plugins/obsidian-git-2.32.1/src/ui/sourceControl/components/pulledFileComponent.svelte",
-    "plugins/obsidian-git-2.32.1/src/ui/sourceControl/components/fileComponent.svelte",
     "plugins/obsidian-git-2.32.1/docs/assets/third-party-windows-git.png",
     "plugins/obsidian-git-2.32.1/docs/assets/line-author-untracked.png",
     "plugins/obsidian-git-2.32.1/docs/assets/line-author-tz-viewer-plus0100.png",
