@@ -14,7 +14,7 @@
               "type": "markdown",
               "state": {
                 "file": "LanguageLearn/Go.md",
-                "mode": "source",
+                "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
@@ -181,7 +181,7 @@
       "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "20d393f912268a52",
+  "active": "f08b1c16e8786836",
   "lastOpenFiles": [
     "LanguageLearn",
     "软件部署/FRP的部署.md",
