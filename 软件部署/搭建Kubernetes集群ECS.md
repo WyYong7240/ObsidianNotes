@@ -1,5 +1,13 @@
-# 快速搭建K8s集群
+---
+tags:
+  - ECS
+  - K8s1-28-15
+  - containerd
+  - ubunut
+  - kubeedge1-18-3
+---
 
+# 快速搭建K8s集群
 > 使用的配置：
 >
 > - 操作系统：Ubuntu 24.04 Server

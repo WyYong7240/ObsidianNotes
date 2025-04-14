@@ -2,5 +2,9 @@
   "accentColor": "#6495ed",
   "nativeMenus": false,
   "baseFontSizeAction": true,
-  "baseFontSize": 14
+  "baseFontSize": 14,
+  "cssTheme": "Obsidian Nord",
+  "enabledCssSnippets": [
+    "line-height"
+  ]
 }

@@ -1,3 +1,11 @@
+---
+tags:
+  - Kubernets
+  - k8s
+  - docker
+  - kubeedge1-10-1
+---
+[[搭建Kubernetes集群ECS]]
 # Ubuntu K8s-1.22.6版本部署
 
 > docker版本：docker-ce: 20.10.13

@@ -1,0 +1,4 @@
+/* 编辑模式下的行间距 */
+.cm-s-obsidian .cm-line {
+    line-height: 2; /* 行间距 */
+}
