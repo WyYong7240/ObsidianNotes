@@ -13,7 +13,8 @@ tags:
 
 ## 1.1 调度框架（Scheduling FrameWork）扩展点
 Kubernetes在调度过程中提供了一些扩展点，如下图
-![image.png](https://typora2icture.oss-cn-beijing.aliyuncs.com/img2/20250414094322.png)
+![image.png](https://typora2icture.oss-cn-beijing.aliyuncs.com/img2/20250414185500.png)
+
 每个扩展点上，一般会有多个Plugins，按照注册顺序依次执行
 根据扩展点是否可以影响调度决策，可以分为两类
 
@@ -83,4 +84,10 @@ Pod的调度过程可以分为两个阶段：
 
    落实上述选择，类似于处理各种关联的东西，并将结果写回数据库
 
-> 例如，虽然Scheduling cycle为Pod选择了一个Node，但是在Binding cycle的过程中，在这个Node上为这个Pod创建
+> 例如，虽然Scheduling cycle为Pod选择了一个Node，但是在Binding cycle的过程中，在这个Node上为这个Pod创建PV 失败了，那么整个调度过程也算是失败的。
+
+两个过程合起来称为==scheduling contex==
+
+除此以外，在进入另一个scheduling context之前，还有一个调度队列，可以编写自己的算法对队列内的Pods进行排序，决定哪些pods先进入调度流程。如下是总流程图：
+![image.png](https://typora2icture.oss-cn-beijing.aliyuncs.com/img2/20250414185415.png)
+
