@@ -78,7 +78,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "3f079a809fd1515d",
@@ -175,14 +176,11 @@
       "templates:插入模板": false,
       "command-palette:打开命令面板": false,
       "obsidian-git:Open Git source control": false,
-      "pdf-plus:PDF++: Toggle auto-copy": false,
-      "pdf-plus:PDF++: Toggle auto-focus": false,
-      "pdf-plus:PDF++: Toggle auto-paste": false,
       "markdown-importer:打开 Markdown 格式转换器": false,
       "workspaces:管理工作区布局": false
     }
   },
-  "active": "4280c426cfb3ad38",
+  "active": "20d393f912268a52",
   "lastOpenFiles": [
     "Kubernetes/Kubernetes调度框架设计与Scheduler Plugins开发部署示例.assets",
     "().md",
