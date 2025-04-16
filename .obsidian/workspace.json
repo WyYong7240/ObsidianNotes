@@ -13,15 +13,44 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Kubernetes/Kubernetes调度框架设计与Scheduler Plugins开发部署示例.md",
+                "file": "Kubernetes/深入剖析Kubernetes.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Kubernetes调度框架设计与Scheduler Plugins开发部署示例"
+              "title": "深入剖析Kubernetes"
+            }
+          },
+          {
+            "id": "08a6d56be495d08c",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Kubernetes/深入剖析Kubernetes.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "深入剖析Kubernetes"
+            }
+          },
+          {
+            "id": "b31c4e43fde34a9e",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Kubernetes/深入剖析Kubernetes.md",
+                "mode": "preview",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "深入剖析Kubernetes"
             }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -78,8 +107,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
     "id": "3f079a809fd1515d",
@@ -141,13 +169,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Kubernetes/Kubernetes调度框架设计与Scheduler Plugins开发部署示例.md",
+                "file": "Kubernetes/深入剖析Kubernetes.md",
                 "followCursor": true,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Kubernetes调度框架设计与Scheduler Plugins开发部署示例 的大纲"
+              "title": "深入剖析Kubernetes 的大纲"
             }
           },
           {
@@ -177,14 +205,20 @@
       "command-palette:打开命令面板": false,
       "obsidian-git:Open Git source control": false,
       "markdown-importer:打开 Markdown 格式转换器": false,
-      "workspaces:管理工作区布局": false
+      "workspaces:管理工作区布局": false,
+      "obsidian-excalidraw-plugin:新建绘图文件": false
     }
   },
-  "active": "20d393f912268a52",
+  "active": "b31c4e43fde34a9e",
   "lastOpenFiles": [
-    "Kubernetes/Kubernetes调度框架设计与Scheduler Plugins开发部署示例.assets",
-    "().md",
+    "Excalidraw/ServiceNodePort访问图解-SNAT.md",
+    "Kubernetes/深入剖析Kubernetes.md",
+    "Excalidraw/ServiceNodePort访问图解NoSNAT.md",
+    "Kubernetes/Drawing 2025-04-16 11.11.40.excalidraw.md",
     "Kubernetes/Kubernetes调度框架设计与Scheduler Plugins开发部署示例.md",
+    "Excalidraw",
+    "Kubernetes/相关技术",
+    "().md",
     "软件部署/使用containerd制作镜像.md",
     "软件部署/搭建Kubernetes集群ECS.md",
     "软件部署/Ubuntu K8s-1.22.6版本部署.md",
@@ -202,8 +236,6 @@
     "Kubernetes Operators (Jason Dobies, Joshua Wood) (Z-Library).pdf",
     "plugins/obsidian-git-2.32.1/styles.css",
     "plugins/obsidian-git-2.32.1/tsconfig.json",
-    "plugins/obsidian-git-2.32.1/src/ui/sourceControl/components/treeComponent.svelte",
-    "plugins/obsidian-git-2.32.1/src/ui/sourceControl/components/tooManyFilesComponent.svelte",
     "plugins/obsidian-git-2.32.1/docs/assets/third-party-windows-git.png",
     "plugins/obsidian-git-2.32.1/docs/assets/line-author-untracked.png",
     "plugins/obsidian-git-2.32.1/docs/assets/line-author-tz-viewer-plus0100.png",
@@ -225,8 +257,6 @@
     "plugins/obsidian-git-2.32.1/docs/Common issues.md",
     "plugins/obsidian-git-2.32.1/docs/Authentication.md",
     "plugins/obsidian-git-2.32.1/README.md",
-    "plugins/obsidian-git-2.32.1/CHANGELOG.md",
-    "未命名.canvas",
-    "未命名 1.md"
+    "未命名.canvas"
   ]
 }

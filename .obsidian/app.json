@@ -4,5 +4,6 @@
   "vimMode": false,
   "showLineNumber": true,
   "strictLineBreaks": false,
-  "showIndentGuide": false
+  "showIndentGuide": false,
+  "alwaysUpdateLinks": true
 }

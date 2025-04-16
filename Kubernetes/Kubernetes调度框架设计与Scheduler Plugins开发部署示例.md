@@ -220,6 +220,8 @@ type PostFilterPlugin interface {
 
 针对每个Node依次调用scoring plugins，得到一个分数
 
+如果要是
+
 ### 2.2.6 NormalizeScore
 
 ### 2.2.7 Reserve：Informational，维护plugin状态信息
@@ -358,4 +360,10 @@ type PostFilterPlugin interface {
   ~~~
 
   
+
+# 参考文章
+
+[K8s 调度框架设计与 scheduler plugins 开发部署示例（2024）](https://arthurchiao.art/blog/k8s-scheduling-plugins-zh/#223-postfilterfilter-%E4%B9%8B%E5%90%8E%E6%B2%A1%E6%9C%89-node-%E5%89%A9%E4%B8%8B%E8%A1%A5%E6%95%91%E9%98%B6%E6%AE%B5)
+
+[K8s 自定义调度器 Part2：通过 Scheduler Framework 实现自定义调度逻辑](https://www.lixueduan.com/posts/kubernetes/34-custom-scheduker-by-scheduler-framework/)
 
