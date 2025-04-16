@@ -1,3 +1,10 @@
+---
+tags:
+  - k8s
+  - Kubernets
+  - 剖析
+---
+
 # 第7章 Kubernetes网络原理
 
 ## 7.7 从外界连通Service与Service 调试三板斧
@@ -72,6 +79,8 @@
   * 为什么要进行SNAT操作？
 
     外部访问图解：[[ServiceNodePort访问图解-SNAT]]
+    <img src="https://typora2icture.oss-cn-beijing.aliyuncs.com/img2/20250416171355.png" alt="image.png" style="zoom:30%;" />
+
   
     原本访问流程：
   
@@ -97,7 +106,8 @@
     但也意味着**无法从Node2上访问这个Service**
   
     此情况下的流程图：[[ServiceNodePort访问图解NoSNAT]]
-  
+  <img src="https://typora2icture.oss-cn-beijing.aliyuncs.com/img2/20250416171538.png" alt="image.png" style="zoom: 50%;" />
+
 
 ### LoadBalance
 
