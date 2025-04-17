@@ -326,3 +326,5 @@ spec:
   实际使用过程中，只用选择一个Ingress Controller，将其部署到Kubernetes集群中，然后这个Ingress Controller就会根据定义的Ingress对象提供对应的代理能力
 
   目前常用的反向代理项目，比如Nginx、HAProxy、Envoy、Traefik等，都为kubernetes专门维护了Ingress Controller
+
+有关Ingress-nginx的部署和测试，详见[[Ingress-Nginx部署]]
