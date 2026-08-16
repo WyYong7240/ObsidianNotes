@@ -1,0 +1,2 @@
+[permissions]
+allow = ["Bash=git fetch origin 2>&1; git log --oneline origin/main -5 2>&1; git rev-parse HEAD 2>&1; git rev-parse origin/main 2>&1"]
