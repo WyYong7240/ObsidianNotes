@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "WorkPreparation/实习面试问题.md",
+                "file": "WorkPreparation/AgentKnowledge/AgentThought.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "实习面试问题"
+              "title": "AgentThought"
             }
           }
         ]
@@ -129,7 +129,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "WorkPreparation/AgentKnowledge/AgentBasic.md",
+                "file": "WorkPreparation/AgentKnowledge/AgentThought.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -159,8 +159,8 @@
             "state": {
               "type": "git-view",
               "state": {},
-              "icon": "git-pull-request",
-              "title": "Source Control"
+              "icon": "lucide-ghost",
+              "title": "git-view"
             }
           },
           {
@@ -169,8 +169,8 @@
             "state": {
               "type": "claudian-view",
               "state": {},
-              "icon": "bot",
-              "title": "Claudian"
+              "icon": "lucide-ghost",
+              "title": "claudian-view"
             }
           }
         ],
@@ -178,12 +178,10 @@
       }
     ],
     "direction": "horizontal",
-    "width": 271.0999755859375,
-    "collapsed": true
+    "width": 271.0999755859375
   },
   "left-ribbon": {
     "hiddenItems": {
-      "obsidian-excalidraw-plugin:新建绘图文件": false,
       "bases:新建数据库": false,
       "switcher:打开快速切换": false,
       "graph:查看关系图谱": false,
@@ -191,15 +189,20 @@
       "daily-notes:打开/创建今天的日记": false,
       "templates:插入模板": false,
       "command-palette:打开命令面板": false,
-      "obsidian-git:Open Git source control": false,
       "markdown-importer:打开 Markdown 格式转换器": false,
       "workspaces:管理工作区布局": false,
+      "obsidian-git:Open Git source control": false,
+      "obsidian-excalidraw-plugin:新建绘图文件": false,
       "claudian:Open Claudian": false
     }
   },
   "active": "fc89c8a13bb844e2",
   "lastOpenFiles": [
+    "WorkPreparation/AgentKnowledge/HermesAgent.md",
+    "WorkPreparation/AgentKnowledge/AgentThought.md",
     "WorkPreparation/AgentKnowledge/AgentBasic.md",
+    "WorkPreparation/实习项目-SRE-Benchmark概述.md",
+    "WorkPreparation/实习面试问题.md",
     "WorkPreparation/AgentKnowledge",
     "WorkPreparation/简历项目准备.md",
     "WorkPreparation/代码随想录.md",
@@ -217,7 +220,6 @@
     "WorkPreparation/八股与面经/Linux.md",
     "WorkPreparation/八股与面经/NET.md",
     "WorkPreparation/八股与面经/OS.md",
-    "WorkPreparation/实习面试问题.md",
     "WorkPreparation/八股与面经/AI相关.md",
     "WorkPreparation/八股与面经/Raft.md",
     "WorkPreparation/从岗位中了解的新东西.md",
@@ -227,9 +229,7 @@
     "PyTorch/_KubernetesAgent构建过程 固定的对话.md",
     "Kubernetes/Kubernetes源码解析.md",
     "GithubProject/KubernetesAgent.md",
-    "软件部署/搭建Kubernetes集群ECS.md",
     "WorkPreparation/代码随想录.assets",
-    "WorkPreparation/八股与面经/Git.md",
     "cleaned_text.txt",
     "extracted_content.html",
     "encoded_content.txt",
