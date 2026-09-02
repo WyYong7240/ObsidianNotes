@@ -6,7 +6,7 @@ source: https://xiaolinnote.com/ai/agent/1_whatisagent.html
 topic: Agent 基础系列（持续追加）
 ---
 
-# 📐 Agent 知识框架总览（概念结构图）
+#  Agent 知识框架总览（概念结构图）
 
 > 本框架按**概念从属关系**组织，而非题目顺序：从顶层「多 Agent 系统」出发，下钻到协作模式、再到每个单 Agent 内部（思考模式 / 执行模式 / Workflow 形态）；记忆、Prompt 等横切主题**另开结构图**。每个节点标注对应条目号，便于跳转复习。
 
