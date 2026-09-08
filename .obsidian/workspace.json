@@ -13,15 +13,30 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "WorkPreparation/AgentKnowledge/AgentThought.md",
+                "file": "WorkPreparation/代码随想录.md",
+                "mode": "preview",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "代码随想录"
+            }
+          },
+          {
+            "id": "3cd8a1446ea2ae52",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "WorkPreparation/代码随想录.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "AgentThought"
+              "title": "代码随想录"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -129,7 +144,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "WorkPreparation/AgentKnowledge/AgentThought.md",
+                "file": "WorkPreparation/代码随想录.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -178,7 +193,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 271.0999755859375
+    "width": 216.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -196,10 +211,12 @@
       "claudian:Open Claudian": false
     }
   },
-  "active": "fc89c8a13bb844e2",
+  "active": "3cd8a1446ea2ae52",
   "lastOpenFiles": [
-    "WorkPreparation/AgentKnowledge/HermesAgent.md",
+    "MiniCPM5-2B-远程API部署方案.md",
+    "WorkPreparation/AgentKnowledge/ToolCalling.md",
     "WorkPreparation/AgentKnowledge/AgentThought.md",
+    "WorkPreparation/AgentKnowledge/HermesAgent.md",
     "WorkPreparation/AgentKnowledge/AgentBasic.md",
     "WorkPreparation/实习项目-SRE-Benchmark概述.md",
     "WorkPreparation/实习面试问题.md",
@@ -227,8 +244,6 @@
     "未命名",
     "八股与面经.md",
     "PyTorch/_KubernetesAgent构建过程 固定的对话.md",
-    "Kubernetes/Kubernetes源码解析.md",
-    "GithubProject/KubernetesAgent.md",
     "WorkPreparation/代码随想录.assets",
     "cleaned_text.txt",
     "extracted_content.html",

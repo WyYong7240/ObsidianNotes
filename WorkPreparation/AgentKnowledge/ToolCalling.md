@@ -298,7 +298,9 @@ JSON-RPC 与传输层是解耦的：同一套消息格式既可以通过本地�
 - Server 可以直接返回 JSON，也可以返回 SSE 流来传递长时间运行任务的中间结果
 - 相比旧的 HTTP + SSE 双端点方案，单端点部署更简单，也更适合负载均衡和 serverless 环境
 
-早期 MCP 使用 HTTP + SSE：POST 端点负责发送请求，GET 端点建立 SSE 长连接接收 Server 推送。2025 年 3 月规范更新后，推荐使用 Streamable HTTP；旧方案被标记为 deprecated，但通常仍需考虑兼容性。
+**早期 MCP 使用 HTTP + SSE：POST 端点负责发送请求，GET 端点建立 SSE 长连接接收 Server 推送。**2025 年 3 月规范更新后，推荐使用 Streamable HTTP；旧方案被标记为 deprecated，但通常仍需考虑兼容性。
+
+> StreamableHTTP并不是抛弃SSE，而是把双端点合并成一个/mcp。Client用 POST发请求，Server根据情况灵活返回：短请求直接回普通JSON，长请求则把HTTP响应升级为SSE流持续推送中间结果。这样一个端点就能干完所有事，对负载均衡器和serverless环境都更友好。
 
 ## 整体关系
 
@@ -327,4 +329,1183 @@ Host（AI 应用）
 - 关键辨析：Host 不等于 Client；Server 不只提供 Tools；MCP 的协议消息格式和传输方式彼此解耦
 - 进阶加分：说明 HTTP + SSE 是旧的双端点方案，当前推荐 Streamable HTTP；后者仍可使用 SSE 流式返回，只是把请求与响应统一到一个端点
 
+### MCP Prompts 和 Agent Skills 的区别（易混点）
+
+MCP Prompts 和 Skills 都可以包含提示词，但解决的问题不同：
+
+| 对比项 | MCP Prompts | Agent Skills |
+|---|---|---|
+| 定位 | 可被客户端发现和调用的提示词模板 | Agent 完成一类任务的能力包 |
+| 主要维护位置 | 通常在 MCP Server，尤其适合远程集中维护 | 通常随 Skill 安装在 Agent 本地 |
+| 内容 | 一组可参数化的 messages / Prompt 模板 | 指令、工作流、脚本、参考资料和模板 |
+| 触发方式 | 用户或客户端调用 `prompts/get` | Agent 根据任务判断后加载和执行 |
+| 运行能力 | 本身主要生成提示消息，不负责执行脚本 | 可以指导 Agent 调工具、运行脚本和组织完整流程 |
+
+#### MCP Prompt 的参数化
+
+MCP Prompt 可以预先定义模板，再由调用方传入运行时参数。例如：
+
+```text
+review_code(language, repository, code)
+```
+
+调用时传入当前语言、仓库和代码，Server 再生成完整 Prompt：
+
+```text
+请按照 payment-service 团队当前的 Go 代码规范审查以下代码……
+```
+
+因此，MCP Prompt 不一定只是简单的字符串替换。Server 还可以根据参数、团队、仓库或远程配置动态生成不同的消息内容。
+
+#### 为什么有些场景更适合 MCP Prompt
+
+例如企业统一维护代码审查规范：
+
+```text
+Claude Desktop ─┐
+Cursor          ├── 远程 MCP Server ── 最新代码审查 Prompt
+内部 Agent      ┘
+```
+
+只要不同的 Host / Client 连接这个 Server，就可以发现并调用同一套模板。规范更新时只需更新 Server，不需要给每个 Agent 单独重新安装 Skill。
+
+#### 为什么 Skill 不能简单等价替代
+
+Skill 也可以保存一个本地代码审查模板，但每个 Agent 通常需要安装和更新对应 Skill。如果 Skill 想从远程获取最新模板，还需要额外实现远程发现、连接、参数传递和版本管理逻辑。
+
+因此可以这样理解：
+
+```text
+MCP Prompt = 远程、可发现、可参数化的 Prompt 服务
+Skill      = 本地加载的 Agent 任务执行方法包
+```
+
+不过这不是绝对的技术限制。Skill 也可以调用远程服务，甚至封装一层 MCP Client；只是此时 Skill 负责“如何发现和调用”，远程服务负责维护 Prompt，整体上仍然是在使用远程 Prompt 能力。
+
+#### 两者可以组合使用
+
+复杂任务中，Skill 和 MCP Prompt 可以各司其职：
+
+```text
+Skill
+  ├── 加载任务执行规则
+  ├── 调用 MCP Prompt，填入当前上下文
+  ├── 调用 MCP Tools 执行操作
+  └── 根据结果生成最终报告
+```
+
+最容易记忆的一句话是：**MCP Prompt 解决“如何共享和调用一段结构化提示词”；Skill 解决“Agent 如何组织指令、工具、脚本和上下文完成一类任务”。**
+
 来源：[小林面试笔记：MCP 由哪几部分组成？](https://xiaolinnote.com/ai/tools/5_mcp_components.html)
+
+---
+
+# 4. Function Calling 和 MCP 分别适合什么场景？
+
+## 一句话回答
+
+Function Calling 更像是**把工具直接写在当前应用里**：适合快速原型、工具数量少、只服务于一个应用、不需要复用的场景。MCP 更像是**把工具独立封装成标准 Server**：适合跨项目或跨团队复用、工具较多或复杂、已有现成 MCP Server，或者正在构建正式 Agent 系统的场景。
+
+两者不是互相排斥的技术。MCP 负责工具的标准化封装和复用，模型在 MCP 场景下仍然可以通过 Function Calling 的方式产生工具调用决策。
+
+## 核心区别：内嵌 vs 独立
+
+| 对比项 | Function Calling | MCP |
+|---|---|---|
+| 工具位置 | 集成在应用代码中 | 独立运行在 MCP Server 中 |
+| 接入方式 | 应用自行定义 schema、解析参数和执行函数 | Client 连接 Server，并通过协议发现能力 |
+| 复用能力 | 通常需要为不同应用重复接入 | 一次实现，多个支持 MCP 的客户端复用 |
+| 控制粒度 | 应用可以直接控制完整执行链路 | 工具逻辑与 Agent 应用解耦，独立维护 |
+| 典型优势 | 简单、直接、定制方便 | 标准化、模块化、易管理、易复用 |
+
+## Function Calling 的适用场景
+
+以下情况通常直接使用 Function Calling 更合适：
+
+1. **快速原型或 Demo**：只需接一两个工具，直接在应用代码中定义 schema 和调用函数，开发路径最短。
+2. **工具只服务于一个应用**：例如一个内部应用专用的私有数据库查询接口，不会被其他项目复用，没有必要额外维护 MCP Server。
+3. **需要精细控制执行逻辑**：权限校验、参数二次处理、特殊重试、链路追踪等逻辑都可以直接嵌入应用代码。
+4. **部署环境受限**：如果云函数或 Serverless 环境不允许启动子进程，MCP 的 stdio Server 不方便部署，直接在主进程中执行函数更稳妥。
+
+## MCP 的适用场景
+
+以下情况更值得考虑 MCP：
+
+1. **跨项目或跨团队复用**：同一套 GitHub、Slack、数据库或文件操作能力，需要被多个 Agent 或客户端使用。
+2. **社区已有现成 MCP Server**：例如已有成熟的 GitHub、数据库或浏览器 MCP Server 时，直接配置复用，避免重复手写 API 对接代码。
+3. **工具数量或复杂度逐渐增加**：工具 schema 和调用逻辑如果散落在应用各处，新增、修改和排错都会越来越困难；MCP 可以将工具集中管理并支持自动发现。
+4. **正式的 Agent 系统**：Agent 往往需要同时接入文件系统、数据库、代码执行和外部 API 等多种能力，MCP 能把工具来源模块化，降低 Agent 核心逻辑与具体工具的耦合。
+
+## 不要只看工具数量
+
+「工具少用 Function Calling，工具多用 MCP」只能作为粗略经验，不能作为绝对规则。应综合考虑：
+
+- 是否需要跨项目、跨团队复用
+- 是否已经有可直接使用的 MCP Server
+- 工具的复杂度和调用链是否变长
+- 团队规模、接口变更频率和维护成本
+- 部署环境是否允许运行独立进程
+- 当前是在做 Demo，还是在建设长期运行的 Agent 系统
+
+例如：两个工具如果会被十个项目共用，也值得封装为 MCP Server；反过来，五个极其简单且只服务于一个应用的函数，也未必需要引入 MCP。
+
+## 一个实用的选型顺序
+
+```text
+是否已有现成 MCP Server？
+  ├── 有：优先直接复用
+  └── 没有
+       ↓
+是否需要跨项目或跨团队复用？
+  ├── 是：考虑实现 MCP Server
+  └── 否
+       ↓
+是否是正式 Agent 系统，或工具维护已变复杂？
+  ├── 是：优先考虑 MCP
+  └── 否：Function Calling 通常更简单
+       ↓
+检查部署环境是否支持独立进程和目标传输方式
+```
+
+## 面试总结（答题要点）
+
+- 不要简单回答「小项目用 Function Calling，大项目用 MCP」，项目规模不是唯一判断标准
+- Function Calling 适合轻量、临时、单应用内部使用，以及需要直接控制执行逻辑的场景
+- MCP 适合复用、模块化管理、正式 Agent 系统，以及社区已有现成 Server 的场景
+- Function Calling 的 schema 和执行代码通常内嵌在应用中；MCP 将工具独立成 Server，通过标准协议接入
+- 两者不是竞争关系：MCP 解决工具的标准化接入和复用，Function Calling 解决模型输出结构化调用意图
+- 最容易记忆的一句话：**只给自己用、只用一次、不需要复用，优先 Function Calling；需要共享、管理和长期维护，优先 MCP。**
+
+来源：[小林面试笔记：Function Calling 与 MCP 的适用场景](https://xiaolinnote.com/ai/tools/7_fc_vs_mcp_usage.html)
+
+---
+
+# 5. 推理模型、传统 Function Calling 与 Interleaved Thinking
+
+## 一句话回答
+
+推理模型通常会先生成一段较长的 thinking，再给出结果；而工具调用要求模型先输出调用请求、暂停等待工具执行、拿到结果后再继续生成。两者的冲突不在于工具协议本身，而在于**连续推理生成与中途暂停之间的生成范式冲突**。
+
+后续方案大致有两类：一类是让工具调用发生在一个完整 thinking 阶段之后，保证这一段推理不被中途打断；另一类是 **Interleaved Thinking**，允许模型在多个 thinking 片段之间穿插工具调用，并在工具结果返回后继续推理。
+
+## 传统 Function Calling 的真实含义
+
+传统 FC 的典型流程是：
+
+```text
+第 1 轮：模型生成 tool_call
+    ↓
+宿主程序执行工具
+    ↓
+第 2 轮：模型读取工具结果并继续生成
+```
+
+这里的“可以随时调用工具”，更准确地说是：模型可以在任意一轮输出工具调用请求，而不是在生成任意一个 token 的过程中无缝插入工具。
+
+当模型输出 `tool_call` 后，当前这一轮生成就结束；工具结果回来后，宿主程序再发起下一轮模型调用。即使连续调用多个工具，形式上也通常是：
+
+```text
+模型 → 工具 A → 模型 → 工具 B → 模型 → 最终回答
+```
+
+传统 FC 的各轮并不是完全没有联系。下一轮通常可以看到完整对话历史和工具结果，因此在**上下文层面是连续的**；但它不一定保留模型上一轮尚未完成的隐藏推理状态，所以在**连续生成状态层面不一定连贯**。
+
+## “思考阶段结束后调用工具”
+
+一种折中方案是：
+
+```text
+完整 thinking 片段 A
+    ↓
+tool_call
+    ↓
+tool_result
+    ↓
+后续生成或新的 thinking 片段 B
+```
+
+它的重点是让 thinking 片段 A 在工具调用前完整结束，不在 thinking 中间强行暂停。这样可以保护这一段推理的完整性，避免模型在思考到一半时突然切换成工具调用格式。
+
+但这里的“完整”主要是**一个生成阶段形式上的完整**，不代表整个问题已经在逻辑上解决。模型可能只是完成了一个子问题，工具结果回来后仍然需要继续推理。
+
+这种方案的缺点是：模型在前面的 thinking 阶段看不到工具结果。如果任务必须“先查数据，再基于数据进行复杂推理”，初始 thinking 就无法利用外部信息。
+
+## Interleaved Thinking 是什么
+
+Interleaved Thinking 允许推理与工具调用交错发生：
+
+```text
+thinking A
+  ↓
+tool_call A
+  ↓
+tool_result A
+  ↓
+thinking B
+  ↓
+tool_call B
+  ↓
+tool_result B
+  ↓
+thinking C
+  ↓
+最终回答
+```
+
+例如旅行规划任务：
+
+```text
+thinking：先查询航班时间
+调用航班工具
+结果：只有晚上航班价格合适
+
+继续 thinking：第一天上午不能安排活动，再查询酒店
+调用酒店工具
+结果：目标区域酒店已满
+
+继续 thinking：调整到另一个区域，生成最终行程
+```
+
+它的关键不是消息表面上出现了“思考 → 工具 → 思考”，而是模型和 API 能够把工具结果当作**同一任务推理过程中的中间信息**，而不是一个完全陌生的新请求。
+
+## 三者的区别
+
+| 方案 | 工具调用位置 | 工具结果回来后 | 连续性特点 |
+|---|---|---|---|
+| 传统 FC | 一轮模型生成结束时 | 开启下一轮生成 | 共享对话上下文，但不保证共享原生推理状态 |
+| 思考结束后调用工具 | 一个完整 thinking 阶段之后 | 继续处理工具结果 | 保护当前 thinking 阶段不被中途打断 |
+| Interleaved Thinking | 多个 thinking 片段之间 | 沿着任务推理继续前进 | 支持工具结果参与同一条连续推理流程 |
+
+因此，传统 FC 也可能出现多轮“思考 + 工具”，但不能仅凭外部流程判断它就是 Interleaved Thinking。真正的区别在于模型、训练方式和 API 是否支持推理过程的延续。
+
+## “推理状态”由谁负责？
+
+这不是单纯由 Agent Harness 决定的，而是模型、模型 API / 推理运行时和 Harness 共同完成：
+
+| 层次 | 主要职责 |
+|---|---|
+| 模型 | 学会何时调用工具，以及工具结果回来后如何继续推理 |
+| 模型 API / 推理运行时 | 保存、恢复或传递 reasoning item、推理上下文等状态 |
+| Agent Harness | 执行工具、保存历史、组织上下文、控制重试和调用循环 |
+
+Harness 可以保存并重新注入：
+
+- 对话历史和工具结果
+- 任务计划与中间摘要
+- 当前步骤和下一步目标
+- 模型公开输出的思考内容（如果 API 允许）
+
+但 Harness 无法凭空制造模型原生的隐藏推理状态。如果模型或 API 不支持连续推理，Harness 最多通过计划、摘要和工作记忆让模型重新理解任务，这属于**基于外部上下文的重新推理**，不等同于恢复上一轮内部 thinking。
+
+另外，完整隐藏思维链通常不会直接暴露给 Harness；即使把一段文字摘要重新放回上下文，也不等于恢复原来的 KV Cache 或内部隐式表示。
+
+## 最容易混淆的三个“连续”
+
+1. **对话连续**：下一轮能看到之前的消息和工具结果。
+2. **语义连续**：下一轮理解之前的计划，并能沿着计划继续。
+3. **内部状态连续**：模型能够恢复或延续上一轮隐藏推理状态。
+
+传统 FC 通常能做到第 1 层，也可能做到第 2 层，但不保证第 3 层。真正支持 Interleaved Thinking 的模型和 API，才会针对第 2、3 层提供更强的保证。
+
+## 面试总结（答题要点）
+
+- 工具调用的暂停与推理模型的连续 thinking 之间存在生成范式冲突
+- 传统 FC 的“随时调用”是指模型可以在任意一轮输出工具请求，不是 token 级别的无缝插入
+- 传统 FC 共享对话上下文，但每次 tool_call 通常结束当前生成，不保证恢复上一轮隐藏推理状态
+- “思考结束后调用工具”保护的是一个 thinking 生成阶段的形式完整性，不代表整个任务逻辑已经完成
+- Interleaved Thinking 允许 thinking → tool → thinking，并让工具结果真正参与后续同一任务的推理
+- Harness 可以保存外部信息和重新组织上下文，但不能让不支持原生连续推理的模型凭空获得相同能力
+- 最准确的一句话：**传统 FC 是分轮次重新生成；Interleaved Thinking 是在工具结果介入后继续同一条任务推理流程。**
+
+来源：[小林面试笔记：为什么有些特定的推理模型不支持 MCP 协议？](https://xiaolinnote.com/ai/tools/8_reasoning_no_mcp.html)
+
+---
+
+# 6. Slash Command 和 Skill 的关系
+
+## 一句话回答
+
+Slash Command 是一种**可手动触发、可以携带参数的任务入口**，通常对应一段可复用的 Prompt。Skill 则是 Agent 执行一类任务所需的**完整能力包**，可以包含 `SKILL.md`、脚本、参考资料、模板和资源。实际使用中，Slash Command 可以作为 Skill 的入口，但不能完全等价替代 Skill。
+
+## Slash Command 是什么
+
+用户通过命令显式触发某项任务：
+
+```text
+/code-review src/main.go
+```
+
+命令背后可能对应这样的 Prompt：
+
+```text
+请审查文件：src/main.go。
+重点关注安全性、错误处理和性能问题，并按照固定格式输出报告。
+```
+
+因此 Slash Command 通常负责三件事：
+
+1. 提供一个容易记忆的命令入口
+2. 携带用户在运行时传入的参数
+3. 将固定 Prompt 和参数交给 Agent 执行
+
+参数可以通过字符串替换、特殊变量（例如 `$ARGUMENTS`、`$1`）或平台定义的上下文机制传递。它不一定是简单的文本替换，也可能由 Agent 结合任务语义理解参数。
+
+## Skill 是什么
+
+Skill 通常是一个目录形式的能力包：
+
+```text
+code-review/
+├── SKILL.md
+├── scripts/
+│   └── check_security.py
+├── references/
+│   └── review_standards.md
+└── assets/
+    └── report_template.md
+```
+
+其中：
+
+- `SKILL.md`：能力说明、适用场景、执行指令和工作流程
+- `scripts/`：可执行脚本
+- `references/`：详细规范和参考文档
+- `assets/`：报告模板、图片或其他资源
+
+Skill 不只是保存一段 Prompt，还可以规定 Agent 应该先做什么、如何调用工具、何时运行脚本、如何处理错误以及最终如何输出结果。
+
+## 两者的核心区别
+
+| 对比项 | Slash Command | Skill |
+|---|---|---|
+| 主要定位 | 快捷命令和任务入口 | 完整的 Agent 能力包 |
+| 触发方式 | 用户输入 `/xxx` 手动触发 | Agent 可根据任务自动发现和加载，也可被手动触发 |
+| 内容形式 | 通常是一份命令定义或 Prompt | `SKILL.md` 加脚本、参考资料、模板等资源 |
+| 参数作用 | 将用户输入传入 Prompt 或任务上下文 | 作为完整工作流的运行时输入 |
+| 执行能力 | 取决于平台，通常较轻量 | 可组织脚本、工具调用和多步骤流程 |
+| 自动发现 | 通常依赖用户知道命令名 | 可以根据名称和描述匹配用户任务 |
+| 加载方式 | 一般直接执行命令对应内容 | 通常支持按需加载指令和辅助资源 |
+
+可以用一个简单的比喻理解：
+
+```text
+Slash Command = 快捷按钮
+Skill          = 操作手册 + SOP + 工具箱
+```
+
+## Skill 可以被 Slash Command 触发
+
+实际中完全可以把 Skill 包装在 Slash Command 后面：
+
+```text
+/code-review src/main.go
+        ↓
+加载 code-review Skill
+        ↓
+传入文件路径和审查要求
+        ↓
+读取规范、运行脚本、生成报告
+```
+
+这种情况下：
+
+- Slash Command 负责“从哪里进入”和“如何传参”
+- Skill 负责“进入之后如何完成任务”
+
+例如命令定义可能只需要表达：
+
+```text
+请使用 code-review Skill 审查用户指定的文件：$ARGUMENTS。
+按照 Skill 中的完整流程执行。
+```
+
+此时 Slash Command 是入口，真正的任务逻辑仍然来自 Skill。
+
+## 为什么不能把两者完全等同
+
+一个简单的 Slash Command 可能只是：
+
+```text
+/summarize file.md
+```
+
+然后展开成：
+
+```text
+请总结 file.md 的主要内容。
+```
+
+但一个完整的总结 Skill 还可以规定：
+
+1. 先读取文件并识别文档类型
+2. 按主题提取关键信息
+3. 读取指定的写作规范
+4. 使用模板组织结果
+5. 检查是否遗漏重要内容
+
+如果只把 Skill 的文字复制成 Slash Command，就可能失去脚本、参考资料、渐进式加载和完整流程管理能力。
+
+## 参数替换不等于直接执行文件
+
+执行：
+
+```text
+/code-review src/main.go
+```
+
+并不意味着 Slash Command 自己直接读取或修改 `src/main.go`。更准确的流程是：
+
+```text
+命令参数：src/main.go
+        ↓
+传给 Agent / Skill
+        ↓
+Agent 根据指令读取文件
+        ↓
+调用工具或脚本执行操作
+```
+
+Slash Command 主要是把“任务意图”和“运行时参数”交给 Agent；具体是否读取文件、调用工具或修改内容，取决于命令定义、Skill 指令和 Agent 的执行能力。
+
+## 最终理解
+
+```text
+Slash Command：用户主动触发的一段可参数化任务指令
+
+Skill：Agent 可以自动发现或被命令触发的完整任务能力包
+```
+
+二者可以组合，但职责不同：
+
+```text
+Slash Command = 进入任务 + 传入参数
+Skill          = 理解任务 + 组织流程 + 使用工具和资源 + 产出结果
+```
+
+## 面试总结（答题要点）
+
+- Slash Command 不只是“保存 Prompt”，它还是一个可手动触发、可携带参数的命令入口
+- Skill 不只是 Prompt，而是由 `SKILL.md`、脚本、参考资料和资源组成的可复用能力包
+- Slash Command 通常由用户显式触发；Skill 可以由 Agent 根据任务自动发现和加载
+- Slash Command 的参数通常会进入 Prompt 或任务上下文，但不一定是简单字符串替换
+- Slash Command 可以包装或触发 Skill，但它本身不必然拥有 Skill 的完整目录结构和执行能力
+- 最容易记忆的一句话：**Slash Command 负责“怎么进入和传参”，Skill 负责“进入之后如何完成任务”。**
+
+---
+
+# 7. A2A 与主 Agent—子 Agent 的任务编排
+
+## 一句话回答
+
+A2A 是 Agent 之间交换任务、状态和结果的协议，不要求通信双方在组织结构上处于同一层级。主 Agent 和子 Agent 之间也可以使用 A2A，但“任务拆分、子任务路由、调度、依赖管理和结果汇总”通常属于主 Agent 或 Orchestrator 的编排逻辑。实际项目中，很多系统使用内部 Session、进程、RPC 或插件协议完成这些工作，功能上类似 A2A，但不一定实现了标准 A2A 协议。
+
+## A2A 不等于“同等级 Agent 通信”
+
+更准确的理解是：A2A 通信的双方都是独立的 Agent 端点，而不是要求双方拥有相同的权限、地位或组织层级。
+
+```text
+研究 Agent ── A2A ── 数据分析 Agent       # 同级协作
+主 Agent ── A2A 委派任务 ── 研究 Agent    # 主从编排
+```
+
+主 Agent—子 Agent 是否使用 A2A，取决于子 Agent 是否作为独立 Agent 服务存在，以及是否需要跨服务、跨平台或跨团队通信，而不是取决于它们是否“同级”。
+
+## 主 Agent—子 Agent 的基本编排流程
+
+```text
+用户任务
+   ↓
+主 Agent / Orchestrator
+   ├── 理解任务
+   ├── 拆分子任务
+   ├── 建立依赖关系
+   ├── 匹配子 Agent 能力
+   ├── 派发任务
+   ├── 跟踪状态和失败
+   └── 汇总结果
+        ├── A2A → 研究 Agent
+        ├── A2A → 代码 Agent
+        └── MCP → 数据库、搜索、文件系统等工具
+```
+
+例如用户要求：
+
+```text
+分析这个 Kubernetes 项目的性能问题，并给出修复方案。
+```
+
+主 Agent 可以拆成：
+
+```text
+任务 A：分析 Kubernetes 配置
+任务 B：检查 Go 代码性能
+任务 C：分析监控和日志
+任务 D：综合分析并生成修复方案
+```
+
+其中 A、B、C 可以并行执行，D 等待前三个任务完成：
+
+```text
+任务 A ─┐
+任务 B ─┼──> 任务 D：综合分析
+任务 C ─┘
+```
+
+## 子任务如何路由到子 Agent
+
+### 1. 静态规则路由
+
+```text
+task_type = "k8s_config"  →  k8s-config-agent
+task_type = "code_review" →  code-review-agent
+```
+
+优点是稳定、可控、容易审计；缺点是任务类型多以后规则会变得复杂。
+
+### 2. 基于能力描述路由
+
+每个 Agent 注册自己的能力：
+
+```json
+{
+  "agent": "observability-agent",
+  "capabilities": ["日志分析", "Prometheus 指标分析", "调用链分析"],
+  "input": "日志、指标或 Trace",
+  "output": "诊断报告"
+}
+```
+
+主 Agent 将子任务与能力描述匹配，再选择合适的 Agent。这种方式比硬编码更灵活。
+
+### 3. LLM 动态路由
+
+主 Agent 先分析任务：
+
+```text
+需要 Kubernetes 配置分析、Go 性能分析和监控数据分析
+```
+
+再动态选择：
+
+```text
+k8s-agent
+code-review-agent
+observability-agent
+```
+
+灵活性高，但需要限制任务拆分深度，避免错误路由、重复执行、循环委派或将敏感任务交给无权限 Agent。
+
+### 4. 混合路由
+
+生产环境通常将几种方式结合：
+
+```text
+权限规则过滤候选 Agent
+        ↓
+能力描述进行匹配
+        ↓
+LLM 负责复杂任务拆分和最终选择
+        ↓
+调度器负责并行、依赖和重试
+```
+
+## 任务交付消息
+
+主 Agent 可以向子 Agent 传递结构化任务：
+
+```json
+{
+  "task_id": "task-1024",
+  "parent_task_id": "task-root",
+  "to_agent": "code-review-agent",
+  "objective": "分析 payment-service 中的 Go 性能问题",
+  "inputs": {
+    "repository": "payment-service",
+    "files": ["internal/order/*.go"]
+  },
+  "constraints": {
+    "read_only": true,
+    "deadline_seconds": 120
+  },
+  "expected_output": {
+    "type": "performance_report",
+    "fields": ["problem", "evidence", "severity", "suggestion"]
+  }
+}
+```
+
+子 Agent 返回的内容可以包括：
+
+```json
+{
+  "task_id": "task-1024",
+  "status": "completed",
+  "result": {
+    "problems": [
+      {
+        "location": "internal/order/service.go:88",
+        "problem": "循环中重复查询数据库",
+        "severity": "high",
+        "suggestion": "改为批量查询"
+      }
+    ]
+  },
+  "artifacts": ["performance-report.md"]
+}
+```
+
+## 任务状态和调度
+
+复杂系统通常需要维护任务状态：
+
+```text
+pending → dispatched → running → completed
+                         ├──────> failed
+                         ├──────> blocked
+                         └──────> cancelled
+```
+
+编排器还需要处理并行任务、前置依赖、超时、重试、失败降级、取消、重复任务去重、子 Agent 接管和结果合并。
+
+## A2A、MCP 与内部 Harness 编排
+
+### 使用 A2A 委派 Agent
+
+```text
+主 Agent
+  ↓ A2A：请完成 Kubernetes 性能诊断
+专业 Agent
+  ├── 自己规划步骤
+  ├── 自己调用 MCP Tools
+  └── 返回进度和最终报告
+```
+
+主 Agent 主要关心任务和结果，不需要了解专业 Agent 的内部执行细节。
+
+### 将 Agent 封装为 MCP Tool
+
+```text
+主 Agent
+  ↓ MCP tools/call：analyze_kubernetes_performance(...)
+MCP Server
+  ↓ 内部运行固定逻辑或 Agent
+  ↓ 返回结构化结果
+```
+
+主 Agent 看到的是一个工具，需要自己决定什么时候调用、传入什么参数以及如何处理结果。
+
+### 使用内部 Harness 协议
+
+```text
+主 Agent
+  ↓ 内部函数 / Session / 子进程 / RPC
+子 Agent
+```
+
+这种方式不一定使用网络 A2A，但可能已经实现了任务 ID、上下文传递、状态跟踪、结果回收、取消和重试等 A2A 类能力。
+
+## 几种典型 Agent 架构的共同模式
+
+公开实现中，不同项目的名称和接口不同，但通常都包含类似机制：
+
+| 架构 | 常见编排特点 |
+|---|---|
+| Hermes Agent | 委派工具、独立子 Agent、并行执行、生命周期、角色和工具权限管理 |
+| Pi Agent | 独立子进程、Agent 配置、单个 / 并行 / 链式工作流、隔离上下文 |
+| OpenCode | `task` 工具、`subagent_type`、子 Session、后台任务、权限和深度限制 |
+| DeepSeek Harness AgentTeams | Captain、持久化成员、任务 DAG、依赖调度、直接消息、重试和恢复 |
+
+这些实现说明：**多 Agent 编排是一个独立的工程问题**。它通常需要自己实现 Agent 发现、路由、任务生命周期、并行调度、权限隔离和结果聚合；是否使用标准 A2A，只是其中的通信协议选择。
+
+## 选型判断
+
+| 场景 | 更适合 |
+|---|---|
+| 本地创建一个短生命周期子任务 | 内部 Harness、Session 或子进程 |
+| 主 Agent 调用固定能力 | MCP Tool |
+| 委派复杂任务给独立专业 Agent | A2A 或内部 Agent Task Protocol |
+| Agent 跨服务、跨团队、跨平台复用 | A2A |
+| 子 Agent 自己规划并使用多个工具 | A2A |
+| 参数稳定、返回结构固定的能力 | MCP |
+
+最容易记忆的一句话是：
+
+```text
+MCP：请执行这个能力
+A2A：请完成这项任务
+Harness：我来决定任务如何拆分、路由和调度
+```
+
+## 面试总结（答题要点）
+
+- A2A 不要求双方处于同一组织层级；主 Agent 和子 Agent 也可以使用 A2A
+- A2A 解决 Agent 之间的任务、状态、消息和结果交互
+- 主 Agent / Orchestrator 负责任务拆分、能力匹配、路由、调度和结果汇总
+- 路由可以采用静态规则、能力描述匹配、LLM 动态路由或混合方式
+- 复杂系统通常需要任务 ID、父子任务关系、状态机、依赖 DAG、超时、重试和取消机制
+- 很多 Agent 项目有自己的内部子 Agent 编排协议，功能上类似 A2A，但不一定兼容标准 A2A
+- 将 Agent 封装为 MCP Tool，主 Agent 看到的是一个能力；通过 A2A 委派，主 Agent 看到的是另一个可以自主完成任务的 Agent
+- 最准确的一句话：**A2A 规定 Agent 如何通信，Harness 决定任务如何拆分和调度，MCP 为 Agent 提供具体工具和外部能力。**
+
+参考：[小林面试笔记：什么是 A2A 协议？它和 MCP 协议的区别是什么？](https://xiaolinnote.com/ai/tools/12_a2a_protocol.html)
+
+---
+
+# 8. MCP 的通信方式：stdio 与 Streamable HTTP
+
+## 一句话回答
+
+MCP 的消息格式统一使用 **JSON-RPC 2.0**，但传输方式根据部署场景不同而不同：本地工具通常使用 **stdio**，远程服务使用 **Streamable HTTP**。stdio 通过操作系统的标准输入输出和进程管道通信，不经过网络；Streamable HTTP 则通过 HTTP 连接远程 Server，并允许 Server 按需返回普通 JSON 或 SSE 流。
+
+## 消息格式与传输方式是两层概念
+
+```text
+JSON-RPC 2.0：规定消息长什么样
+stdio / Streamable HTTP：规定消息怎么传
+```
+
+例如调用 MCP 工具时，消息本身可以是：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "take_screenshot",
+    "arguments": {"url": "https://example.com"}
+  }
+}
+```
+
+这条 JSON-RPC 消息既可以写入本地子进程的 stdin，也可以放入 HTTP POST 请求体。更换传输方式不会改变上层工具调用逻辑。
+
+## stdio 到底是什么
+
+stdio 是 standard input / output 的缩写，即标准输入和标准输出。MCP Client 会把 MCP Server 当作一个本地子进程启动：
+
+```text
+MCP Client
+  ├── 向 Server 的 stdin 写入 JSON-RPC 请求
+  └── 从 Server 的 stdout 读取 JSON-RPC 响应
+
+操作系统管道
+  └── 连接两个本地进程
+```
+
+它不是 HTTP，也不是访问 `localhost` 的网络请求。两个进程在同一台机器上运行，通过操作系统提供的管道交换数据，通常不经过网卡、TCP/IP 协议栈或监听端口。
+
+### stdio 的启动方式
+
+Client 配置的不是一个 URL，而是启动 Server 所需的命令：
+
+```json
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/tmp"],
+      "env": {}
+    }
+  }
+}
+```
+
+典型流程是：
+
+1. Client 根据配置启动 Server 子进程
+2. Client 通过 stdin 发送 JSON-RPC 消息
+3. Server 从 stdin 读取消息并执行操作
+4. Server 将 JSON-RPC 响应写入 stdout
+5. Client 读取响应并交给 Host / Agent
+
+### stdio 的优点
+
+- **不需要网络**：适合本地文件、Git、代码分析等工具
+- **不需要端口**：没有监听端口暴露带来的网络攻击面
+- **延迟较低**：数据通过本地进程管道传递
+- **生命周期简单**：通常随 Client 启动和退出，不需要手动管理独立服务
+- **适合本地权限隔离**：Server 可以作为受控的子进程运行
+
+### stdio 的限制
+
+- Client 和 Server 通常需要在同一台机器上
+- 不适合多个远程 Client 共享同一个 Server
+- 需要运行子进程的部署环境
+- Server 崩溃、stdout 混入日志或进程生命周期异常时，需要由 Client 负责处理
+
+## Streamable HTTP：远程 MCP 的当前方式
+
+远程场景下，MCP Server 作为独立 HTTP 服务部署，多个 Client 可以通过网络访问它：
+
+```text
+Client A ─┐
+Client B ─┼── HTTP ──> MCP Server
+Client C ─┘
+```
+
+Streamable HTTP 通常使用一个 MCP 端点，例如 `/mcp`：
+
+1. Client 通过 POST 发送 JSON-RPC 消息
+2. Server 根据任务是否需要流式返回，选择响应方式
+3. 简单任务返回 `application/json`
+4. 长时间或需要增量结果的任务返回 `text/event-stream`
+
+```text
+POST /mcp
+  ├── 普通任务 → application/json
+  └── 流式任务 → text/event-stream（SSE）
+```
+
+它仍然可以使用 SSE 传递流式数据，但不再要求 Client 预先建立一个独立的 SSE 接收端点。
+
+## 为什么远程方案从 HTTP + SSE 演进为 Streamable HTTP
+
+### 早期的 HTTP + SSE 双端点
+
+早期方案将两个方向拆开：
+
+```text
+POST 端点：Client → Server，发送 JSON-RPC 请求
+GET / SSE：Server → Client，建立长连接并推送消息
+```
+
+一次 MCP 会话需要维护两条关联通道：一条负责请求，一条负责推送。Client 还要处理会话 ID、连接建立顺序和两条连接之间的对应关系。
+
+### 双端点方案的问题
+
+#### 1. 状态管理复杂
+
+如果 Client POST 请求后网络断开，Client 可能无法立即判断：
+
+- Server 是否已经收到请求
+- Server 是否已经执行请求
+- 响应是否正在 SSE 连接中返回
+- 是否应该重试
+- 重试是否会导致重复执行
+
+请求通道和响应通道分离，使故障排查和幂等处理更复杂。
+
+#### 2. 连接管理复杂
+
+Client 需要：
+
+- 先建立或维护 SSE 长连接
+- 处理 POST 与 SSE 的会话关联
+- 处理 SSE 断线和重连
+- 区分普通响应、异步响应和 Server 主动推送
+
+对简单的请求—响应任务来说，这种复杂度往往是不必要的。
+
+#### 3. 部署和基础设施兼容性较差
+
+双端点和长连接会增加对以下基础设施的要求：
+
+- 反向代理
+- 负载均衡器
+- 会话保持
+- 超时设置
+- Serverless 平台
+
+请求可能被转发到不同实例，而 SSE 长连接又需要和对应会话保持关联，部署与排错成本较高。
+
+#### 4. 简单任务被迫使用长连接
+
+很多 MCP 调用很快就能完成，例如读取一个配置或查询一个简单数据。如果每次都需要额外维护 SSE 长连接，就会增加连接和资源开销。
+
+## Streamable HTTP 的改进
+
+Streamable HTTP 将请求与响应统一到一个端点：
+
+```text
+Client POST /mcp
+        ↓
+Server 处理 JSON-RPC
+        ├── 立即完成：返回普通 JSON
+        └── 需要流式返回：返回 SSE 流
+```
+
+它带来的好处是：
+
+- 请求和响应在同一次 HTTP 交互中关联，状态更容易管理
+- 简单调用不需要预先建立 SSE 连接
+- 长任务仍然可以通过 SSE 流式返回进度或增量结果
+- 端点更少，配置、代理和负载均衡更简单
+- 更适合云端部署、Serverless 和多 Client 共享
+- 仍然可以兼容需要 Server 主动推送的场景：必要时额外建立 GET 流
+
+因此，“抛弃 HTTP + SSE”并不是完全抛弃 SSE，而是：
+
+> 从“POST 请求通道 + 独立 SSE 推送通道”，演进为“单端点按需返回普通 JSON 或 SSE 流”。
+
+## stdio 与 Streamable HTTP 对比
+
+| 对比项 | stdio | Streamable HTTP |
+|---|---|---|
+| 部署位置 | 本地子进程 | 远程或独立 HTTP 服务 |
+| 通信方式 | stdin / stdout 管道 | HTTP POST，必要时 SSE 响应 |
+| 是否经过网络 | 否 | 是 |
+| 是否需要端口 | 否 | 是 |
+| 延迟 | 通常较低 | 有网络开销 |
+| 多 Client 共享 | 不适合 | 适合 |
+| 生命周期 | 通常由 Client 管理 | Server 独立运行 |
+| 认证与重连 | 相对简单 | 需要处理认证、断线和重连 |
+| 典型场景 | 本地文件、Git、代码工具 | 云端数据库、团队共享服务、远程 API |
+
+## 面试总结（答题要点）
+
+- MCP 的底层消息格式是 JSON-RPC 2.0，传输方式是 stdio 或 Streamable HTTP
+- stdio 是 Client 启动本地 Server 子进程，通过 stdin 发送请求、stdout 接收响应，不是 localhost HTTP
+- stdio 的优点是无网络、无端口、延迟低、生命周期容易管理
+- Streamable HTTP 适合远程部署和多个 Client 共享同一个 Server
+- 早期 HTTP + SSE 使用 POST 请求端点和独立 SSE 推送端点，带来会话关联、断线重连、状态判断和部署方面的复杂度
+- Streamable HTTP 将两者统一到一个端点，Server 可以按需返回普通 JSON 或 SSE 流
+- Streamable HTTP 不是完全放弃 SSE，而是把 SSE 从“常驻独立通道”变成“按需的流式响应”
+- 最容易记忆的一句话：**stdio 适合本地进程间通信，Streamable HTTP 适合远程服务通信；JSON-RPC 规定消息格式，传输层只规定消息如何到达。**
+
+来源：[小林面试笔记：MCP 协议通常采用什么通信方式？](https://xiaolinnote.com/ai/tools/13_mcp_transport.html)
+
+---
+
+# 9. AI 场景下如何选择 HTTP + SSE 与 WebSocket？
+
+## 结论先行
+
+如果只是低频地允许用户中途停止模型输出，**HTTP + SSE 完全可以满足需求**，不需要为了“支持停止”专门引入 WebSocket。
+
+```text
+低频停止：SSE + 关闭流 / cancel API
+高频双向控制：WebSocket
+实时语音：WebSocket 或 WebRTC
+```
+
+真正需要 WebSocket 的，不是“能不能停止”这一点，而是是否需要持续、高频、低延迟的双向交互。
+
+## 普通文本对话中的 SSE 流程
+
+```text
+客户端 POST /chat
+        ↓
+服务端建立 SSE 流
+        ↓
+持续返回模型 token
+        ↓
+用户点击“停止”
+        ↓
+客户端关闭 SSE 连接
+        ↓
+服务端取消模型生成
+```
+
+如果用户随后输入新问题：
+
+```text
+关闭旧 SSE
+        ↓
+POST 新消息
+        ↓
+建立新的 SSE 流
+```
+
+用户看到的效果仍然是：
+
+```text
+模型正在输出 → 用户点击停止 → 模型停止 → 用户发送新问题
+```
+
+只是底层经历了“关闭旧流 + 新建请求”，而不是在同一条连接里发送取消指令。
+
+## SSE 下实现停止的两种方式
+
+### 方式一：直接关闭 SSE
+
+客户端通过 `AbortController` 或其他方式关闭当前 SSE 请求。服务端检测到连接断开后，取消对应的模型任务。
+
+优点是简单，适合大多数文本聊天场景。
+
+```text
+客户端断开 SSE
+        ↓
+服务端检测 disconnect
+        ↓
+取消模型推理
+        ↓
+释放 GPU / CPU / 请求资源
+```
+
+### 方式二：额外发送取消请求
+
+客户端保留 SSE，同时通过另一个 HTTP 请求显式通知服务端：
+
+```http
+POST /cancel
+```
+
+```json
+{
+  "generation_id": "gen-123"
+}
+```
+
+服务端根据 `generation_id` 找到并取消对应的生成任务。这种方式适合任务管理较复杂的系统，但会增加一个接口和状态协调过程。
+
+## 服务端必须正确处理取消
+
+关闭 SSE 只代表客户端不再接收数据，不一定自动停止服务端的模型推理。服务端需要建立：
+
+```text
+SSE 连接断开
+        ↓
+检测客户端 disconnect
+        ↓
+取消模型推理任务
+        ↓
+释放资源
+```
+
+还应为每次生成分配唯一的 `generation_id`：
+
+```text
+旧任务：gen-123
+新任务：gen-124
+```
+
+如果旧任务取消不及时，服务端收到旧任务 token 时应检查其状态：
+
+```text
+token 属于已取消的 generation_id
+        ↓
+丢弃，不再发送给客户端
+```
+
+否则可能出现旧回答和新回答交错的问题。
+
+## WebSocket 下的停止流程
+
+WebSocket 可以在同一条长连接中发送模型输出和控制指令：
+
+```text
+建立 WebSocket
+        ↓
+客户端发送 user_message
+        ↓
+服务端持续发送 token
+        ↓
+客户端发送 cancel
+        ↓
+服务端停止生成
+        ↓
+客户端继续发送新的 user_message
+```
+
+例如：
+
+```json
+{
+  "type": "cancel",
+  "generation_id": "gen-123"
+}
+```
+
+然后继续使用同一条连接发送新消息：
+
+```json
+{
+  "type": "user_message",
+  "content": "帮我总结项目目录"
+}
+```
+
+它的优势是没有“关闭旧流 → 新建请求”的连接切换过程，适合需要持续双向控制的场景。
+
+但 WebSocket 收到 `cancel` 并不等于模型一定立即停止。真正的停止链路仍然是：
+
+```text
+WebSocket 收到 cancel
+        ↓
+找到对应模型任务
+        ↓
+将取消信号传递给推理服务
+        ↓
+模型任务停止
+```
+
+如果推理服务不支持取消，服务端可能只能停止转发结果，而模型本身仍然在后台生成。
+
+## 为什么低频停止不需要 WebSocket
+
+普通文本对话通常是：
+
+```text
+用户发送一条消息
+        ↓
+模型持续输出
+        ↓
+用户偶尔点击一次停止
+```
+
+这种交互中，停止动作发生频率低，而且关闭 SSE、重新发送 POST 的成本很小。引入 WebSocket 反而会增加：
+
+- 长连接生命周期管理
+- 连接断开与重连
+- 连接状态和会话绑定
+- 横向扩展和粘性会话
+- 代理、防火墙和负载均衡配置
+
+因此，判断标准不是“是否需要停止”，而是：
+
+```text
+是否需要在模型输出期间持续、高频地从客户端发送控制消息？
+```
+
+如果答案是否定的，SSE 通常更简单。
+
+## SSE 与 WebSocket 的场景选择
+
+| 场景 | 推荐方式 | 原因 |
+|---|---|---|
+| 普通 LLM 流式文字输出 | SSE | 服务端单向推送已经足够 |
+| 低频点击“停止生成” | SSE | 关闭流或调用 cancel API 即可 |
+| 用户发送新问题 | SSE + POST | 新问题走新的 HTTP 请求 |
+| 高频发送暂停、恢复、切换指令 | WebSocket | 同一连接支持双向消息 |
+| 实时语音对话和用户抢话 | WebSocket / WebRTC | 客户端持续发送音频并随时打断 |
+| 多人协同编辑 | WebSocket | 双方持续交换实时状态 |
+| 实时游戏或状态同步 | WebSocket | 高频双向事件交互 |
+
+## 与连接数限制的关系
+
+在 HTTP/1.1 下，一个 SSE 流会长期占用一条连接。用户点击停止后关闭 SSE，可以释放这条连接；之后的新 POST 可以复用或重新建立连接。
+
+```text
+SSE 持续输出：占用连接 1
+用户点击停止：关闭连接 1
+发送新消息：复用或新建连接
+```
+
+如果用户在旧 SSE 仍然运行时直接发送新 POST，那么 POST 可能需要占用另一条连接。HTTP/2 则可以在一条 TCP 连接上复用多个逻辑 Stream，从而缓解 HTTP/1.1 的连接数限制。
+
+## 最终理解
+
+```text
+SSE：模型输出期间，客户端偶尔取消
+     关闭当前流，再发送新的 HTTP 请求
+
+WebSocket：模型输出期间，客户端持续发送控制消息
+           在同一条双向连接中完成交互
+```
+
+所以：
+
+> “支持中途停止”不是使用 WebSocket 的充分理由；只有当应用需要高频、持续、低延迟的双向通信时，WebSocket 的优势才真正明显。
+
+## 面试总结（答题要点）
+
+- 低频停止模型输出时，HTTP + SSE 已经足够
+- SSE 下可以通过关闭流，或者额外调用取消接口实现停止
+- 服务端必须将客户端断开或取消请求传递给模型推理任务，否则模型可能仍在后台生成
+- `generation_id` 可以避免旧任务的残余 token 污染新任务
+- WebSocket 的优势是同一条连接中可以随时发送 token、cancel、pause 和新消息
+- 实时语音、抢话、多用户协同和高频控制更适合 WebSocket 或 WebRTC
+- 最容易记忆的一句话：**低频控制用 SSE 更简单，持续双向交互才需要 WebSocket。**
+
+来源：[小林面试笔记：说说 WebSocket 和 SSE 通信的区别及局限性？](https://xiaolinnote.com/ai/tools/14_sse_vs_websocket.html)
