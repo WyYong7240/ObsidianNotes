@@ -27,16 +27,30 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "WorkPreparation/代码随想录.md",
+                "file": "WorkPreparation/秋招面试记录/快手SRE一面.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "代码随想录"
+              "title": "快手SRE一面"
+            }
+          },
+          {
+            "id": "aa33c1b8f40bbda5",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "WorkPreparation/秋招面试记录/科大讯飞SRE一面.md",
+                "mode": "preview",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "科大讯飞SRE一面"
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -144,7 +158,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "WorkPreparation/代码随想录.md",
+                "file": "WorkPreparation/秋招面试记录/科大讯飞SRE一面.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -211,54 +225,54 @@
       "claudian:Open Claudian": false
     }
   },
-  "active": "3cd8a1446ea2ae52",
+  "active": "aa33c1b8f40bbda5",
   "lastOpenFiles": [
+    "WorkPreparation/秋招面试记录/快手SRE三面.md",
+    "WorkPreparation/秋招面试记录/百度SRE二面.md",
+    "WorkPreparation/秋招面试记录/科大讯飞SRE一面.md",
+    "科大讯飞SRE一面.m4a",
+    "快手SRE三面.m4a",
+    "WorkPreparation/八股与面经/Go.md",
+    "WorkPreparation/实习面试问题.md",
+    "WorkPreparation/秋招面试记录/百度SRE一面.md",
+    "WorkPreparation/秋招面试记录/快手SRE二面.md",
+    "WorkPreparation/代码随想录.md",
+    "WorkPreparation/秋招面试记录/快手SRE一面.md",
+    "WorkPreparation/秋招面试记录/字节AI云原生一面.md",
+    "README.md",
+    "秋招面试记录/快手SRE二面-面试复盘.md",
+    "秋招面试记录",
     "MiniCPM5-2B-远程API部署方案.md",
+    "WorkPreparation/秋招面试记录",
+    "WorkPreparation/AgentKnowledge/assets/sse-websocket/websocket-duplex.png",
+    "WorkPreparation/AgentKnowledge/assets/sse-websocket/sse-pipe.png",
+    "WorkPreparation/AgentKnowledge/assets/sse-websocket/sse-dual-channel.png",
+    "WorkPreparation/AgentKnowledge/assets/sse-websocket/proxy-compatibility.png",
+    "WorkPreparation/AgentKnowledge/assets/sse-websocket/interrupt-comparison.png",
+    "WorkPreparation/AgentKnowledge/assets/sse-websocket/http-streaming.png",
+    "WorkPreparation/AgentKnowledge/AgentBasic.md",
+    "WorkPreparation/八股与面经/Kubernetes.md",
+    "whisper-local/test.txt",
+    "whisper-local/test.wav",
+    "whisper-local/transcribe.py",
+    "whisper-local/requirements.txt",
+    "whisper-local/README.md",
+    "whisper-local",
+    "WorkPreparation/笔试/算法.md",
+    "WorkPreparation/AgentKnowledge/assets/sse-websocket/ai-transport-selection.png",
+    "WorkPreparation/AgentKnowledge/assets/sse-websocket/websocket-scaling.png",
+    "WorkPreparation/AgentKnowledge/assets/sse-websocket",
     "WorkPreparation/AgentKnowledge/ToolCalling.md",
     "WorkPreparation/AgentKnowledge/AgentThought.md",
     "WorkPreparation/AgentKnowledge/HermesAgent.md",
-    "WorkPreparation/AgentKnowledge/AgentBasic.md",
     "WorkPreparation/实习项目-SRE-Benchmark概述.md",
-    "WorkPreparation/实习面试问题.md",
-    "WorkPreparation/AgentKnowledge",
     "WorkPreparation/简历项目准备.md",
-    "WorkPreparation/代码随想录.md",
     "WorkPreparation/AgentKnowledge/Agent面试题01-什么是Agent与大模型的本质区别.md",
     "WorkPreparation/千问AISRE实习/SREOne.md",
     "WorkPreparation/千问AISRE实习/SRE-Benchmark/SAQ后端到Hermes-Gateway执行流程说明.md",
     "WorkPreparation/千问AISRE实习/SRE-Benchmark/benchmark-execution-flow.md",
-    "WorkPreparation/千问AISRE实习/SRE-Benchmark",
-    "WorkPreparation/千问AISRE实习/新建文件夹",
-    "WorkPreparation/千问AISRE实习",
-    "WorkPreparation/八股与面经/Kubernetes.md",
-    "WorkPreparation/笔试/算法.md",
-    "WorkPreparation/八股与面经/Go.md",
-    "WorkPreparation/八股与面经/Golang面试题.md",
-    "WorkPreparation/八股与面经/Linux.md",
-    "WorkPreparation/八股与面经/NET.md",
-    "WorkPreparation/八股与面经/OS.md",
-    "WorkPreparation/八股与面经/AI相关.md",
-    "WorkPreparation/八股与面经/Raft.md",
-    "WorkPreparation/从岗位中了解的新东西.md",
-    "未命名.md",
-    "未命名",
-    "八股与面经.md",
-    "PyTorch/_KubernetesAgent构建过程 固定的对话.md",
-    "WorkPreparation/代码随想录.assets",
-    "cleaned_text.txt",
-    "extracted_content.html",
-    "encoded_content.txt",
-    "WorkPreparation/笔试",
     "DrawIO/限速队列工作流程.svg",
     "GithubProject/MIT6.824-Raft.assets/image-20251219094200861.png",
-    "Untitled Diagram.svg",
-    "Kubernetes/Kubernetes Operator开发笔记.assets/image-20250904170942810.png",
-    "未命名.canvas",
-    "TechnicalDoc/使用Prometheus-adapter提供custom-metrics实现自定义指标HPA.assets/4dc347e29c10b7aa54c7e4885b02b72.png",
-    "TechnicalDoc/KubePrometheus添加监控目标target.assets/image-20250605193825901.png",
-    "软件部署/Cadvisor的Docker部署与Prometheus+Grafana连接.assets/d47febee8e82c9ed63e05bd6fa7a81f.png",
-    "Kubernetes/深入剖析Kubernetes.assets/image-20250508110457170.png",
-    "软件部署/Kuboard部署.assets/image-20250507175154941.png",
-    "plugins/obsidian-git-2.32.1/docs/assets/third-party-windows-git.png"
+    "未命名.canvas"
   ]
 }
