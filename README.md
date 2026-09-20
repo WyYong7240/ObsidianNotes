@@ -28,7 +28,7 @@
 
 1. 使用 Obsidian 打开本仓库目录。
 2. 从 [`WorkPreparation/实习面试问题.md`](WorkPreparation/实习面试问题.md) 查看面试问题索引。
-3. 从 [`WorkPreparation/简历项目准备.md`](WorkPreparation/简历项目准备.md) 查看项目讲解和追问准备。
+3. 从 [`WorkPreparation/简历项目准备.md`](简历项目准备.md) 查看项目讲解和追问准备。
 4. 通过文档中的 Obsidian 双链跳转到对应主题的详细笔记。
 
 ## 笔记约定

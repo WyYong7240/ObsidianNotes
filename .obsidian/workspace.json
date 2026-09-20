@@ -27,30 +27,16 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "WorkPreparation/秋招面试记录/快手SRE一面.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "快手SRE一面"
-            }
-          },
-          {
-            "id": "aa33c1b8f40bbda5",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "WorkPreparation/秋招面试记录/科大讯飞SRE一面.md",
+                "file": "WorkPreparation/简历项目问答/06-千问事业部实习.md",
                 "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "科大讯飞SRE一面"
+              "title": "06-千问事业部实习"
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -158,7 +144,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "WorkPreparation/秋招面试记录/科大讯飞SRE一面.md",
+                "file": "WorkPreparation/简历项目问答/06-千问事业部实习.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -225,19 +211,28 @@
       "claudian:Open Claudian": false
     }
   },
-  "active": "aa33c1b8f40bbda5",
+  "active": "3cd8a1446ea2ae52",
   "lastOpenFiles": [
+    "WorkPreparation/简历项目问答/05-KubernetesAgent.md",
+    "WorkPreparation/简历项目问答/06-千问事业部实习.md",
+    "WorkPreparation/简历项目问答/01-国防科技创新特区项目 分布式算网融合高效计算架构.md",
+    "WorkPreparation/秋招面试记录/度小满后端开发一面.md",
+    "WorkPreparation/秋招面试记录/快手SRE一面.md",
+    "WorkPreparation/简历项目问答/02-微服务架构应用的云边异构调度优化.md",
+    "WorkPreparation/简历项目问答/03-面向微服务基准的Trace监控数据采集与异常检测工具.md",
+    "WorkPreparation/实习面试问题.md",
+    "WorkPreparation/简历项目问答/04-MIT6.824-Raft一致性共识算法.md",
+    "WorkPreparation/简历项目问答/简历项目准备.md",
+    "WorkPreparation/简历项目问答",
     "WorkPreparation/秋招面试记录/快手SRE三面.md",
-    "WorkPreparation/秋招面试记录/百度SRE二面.md",
     "WorkPreparation/秋招面试记录/科大讯飞SRE一面.md",
+    "WorkPreparation/秋招面试记录/百度SRE二面.md",
     "科大讯飞SRE一面.m4a",
     "快手SRE三面.m4a",
     "WorkPreparation/八股与面经/Go.md",
-    "WorkPreparation/实习面试问题.md",
     "WorkPreparation/秋招面试记录/百度SRE一面.md",
     "WorkPreparation/秋招面试记录/快手SRE二面.md",
     "WorkPreparation/代码随想录.md",
-    "WorkPreparation/秋招面试记录/快手SRE一面.md",
     "WorkPreparation/秋招面试记录/字节AI云原生一面.md",
     "README.md",
     "秋招面试记录/快手SRE二面-面试复盘.md",
@@ -261,16 +256,7 @@
     "WorkPreparation/笔试/算法.md",
     "WorkPreparation/AgentKnowledge/assets/sse-websocket/ai-transport-selection.png",
     "WorkPreparation/AgentKnowledge/assets/sse-websocket/websocket-scaling.png",
-    "WorkPreparation/AgentKnowledge/assets/sse-websocket",
     "WorkPreparation/AgentKnowledge/ToolCalling.md",
-    "WorkPreparation/AgentKnowledge/AgentThought.md",
-    "WorkPreparation/AgentKnowledge/HermesAgent.md",
-    "WorkPreparation/实习项目-SRE-Benchmark概述.md",
-    "WorkPreparation/简历项目准备.md",
-    "WorkPreparation/AgentKnowledge/Agent面试题01-什么是Agent与大模型的本质区别.md",
-    "WorkPreparation/千问AISRE实习/SREOne.md",
-    "WorkPreparation/千问AISRE实习/SRE-Benchmark/SAQ后端到Hermes-Gateway执行流程说明.md",
-    "WorkPreparation/千问AISRE实习/SRE-Benchmark/benchmark-execution-flow.md",
     "DrawIO/限速队列工作流程.svg",
     "GithubProject/MIT6.824-Raft.assets/image-20251219094200861.png",
     "未命名.canvas"
