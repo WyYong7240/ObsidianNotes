@@ -2438,3 +2438,234 @@ func UpdateFunc(oldObj, newObj interface{}) {
 
 # 针对基于Kubernetes平台的训推一体的平台有何了解？KubeFlow有什么问题？
 
+# Pod 状态机、Ready 判定与探针机制
+
+## 一、Pod 状态的几个层次
+
+面试中不能简单地把 Pod 状态描述成 `Pending → Running → Ready`，因为这些概念属于不同层次：
+
+- **Pod Phase**：Pod 的总体阶段，包括 `Pending`、`Running`、`Succeeded`、`Failed`、`Unknown`；
+- **Pod Condition**：Pod 是否完成调度、初始化、容器就绪以及是否可以接收流量；
+- **Container State**：单个容器处于 `Waiting`、`Running` 或 `Terminated`；
+- **Probe**：kubelet 用来判断应用是否完成启动、是否存活以及是否可以接收流量的探测机制。
+
+其中，`Ready` 不是 Pod Phase，而是 Pod Condition；`CrashLoopBackOff` 也不是 Pod Phase，而通常表现为容器处于 `Waiting` 状态时的一个 `Reason`。
+
+## 二、Pod Phase
+
+### 1. Pending
+
+Pod 已经被 API Server 接收，但还没有完成运行准备。常见原因包括：
+
+- 尚未被 Scheduler 调度到节点；
+- Init Container 尚未执行完成；
+- 正在拉取镜像；
+- 资源不足，容器尚未成功创建。
+
+Pending 不一定表示故障，也可能只是正常等待。
+
+### 2. Running
+
+Pod 已经完成调度，容器已经创建，并且至少有一个容器正在运行或处于重启过程。
+
+Running 不等价于业务可用。一个容器可能处于反复崩溃和重启状态，Pod 仍可能显示为 Running，但同时 `Ready=False`。
+
+### 3. Succeeded
+
+Pod 中所有容器都已经成功退出，并且不会再被重启。常见于 Job 或一次性批处理任务。
+
+### 4. Failed
+
+Pod 中所有容器都已经结束，并且至少有一个容器以失败状态退出，或因异常被终止。
+
+### 5. Unknown
+
+控制面暂时无法获取 Pod 状态，常见原因是 kubelet 与 API Server 之间通信异常。
+
+## 三、Pod Conditions
+
+常见的 Pod Conditions 包括：
+
+| Condition | 含义 | 主要设置者 |
+|---|---|---|
+| `PodScheduled` | Pod 是否已经被调度到节点 | Scheduler |
+| `Initialized` | Init Container 是否执行完成 | kubelet |
+| `ContainersReady` | Pod 中需要参与判断的容器是否都 Ready | kubelet |
+| `Ready` | Pod 是否整体可以接收业务流量 | kubelet |
+
+### ContainersReady 如何判断
+
+`ContainersReady` 不是 CRI 直接返回的字段，而是 kubelet 综合以下信息计算出来的：
+
+- CRI 返回的容器生命周期状态，例如容器是否 Running、Waiting 或 Terminated；
+- Readiness Probe 的执行结果；
+- Startup Probe 是否已经成功；
+- 容器是否处于异常重启或终止状态。
+
+当 Pod 中所有需要参与判断的容器都满足 Ready 条件时，kubelet 才会设置：
+
+```text
+ContainersReady=True
+```
+
+如果任意一个必要容器未就绪，则为：
+
+```text
+ContainersReady=False
+```
+
+CRI 主要报告容器生命周期状态，并不直接判断业务程序是否可以接收请求。
+
+### Ready 如何判断
+
+通常可以理解为：
+
+```text
+Pod Ready = ContainersReady
+             AND 所有 Readiness Gates 满足
+```
+
+如果没有配置 Readiness Gates，Pod Ready 主要取决于 ContainersReady 和相关容器的 Readiness Probe。
+
+## 四、容器状态与 CrashLoopBackOff
+
+### Container State
+
+- `Waiting`：容器尚未运行，例如正在拉取镜像、等待启动或等待重启；
+- `Running`：容器已经启动并运行；
+- `Terminated`：容器已经退出，包含退出码、退出原因和结束时间等信息。
+
+### CrashLoopBackOff
+
+`CrashLoopBackOff` 通常表示：
+
+1. 容器启动后很快退出；
+2. kubelet 按照 `restartPolicy` 尝试重启；
+3. 容器连续失败；
+4. kubelet 逐步延长重启等待时间；
+5. 等待一段时间后再次尝试启动。
+
+典型表现是：
+
+```text
+Container State: Waiting
+Reason: CrashLoopBackOff
+```
+
+它不是 Pod Phase。此时 Pod 可能仍显示为 Running，但通常会处于 `Ready=False`。
+
+## 五、Startup、Liveness 和 Readiness Probe
+
+三类 Probe 的区别在于判断目的，而不是探测协议。每一类 Probe 都可以使用 HTTP、TCP、Exec 或 gRPC 方式。
+
+### 1. Startup Probe：判断是否完成启动
+
+Startup Probe 用于保护慢启动应用。
+
+配置 Startup Probe 后，在它成功之前：
+
+- Liveness Probe 不会生效；
+- Readiness Probe 不会生效；
+- 应用不会因为启动阶段暂时不健康而被 Liveness Probe 误杀。
+
+如果 Startup Probe 在允许的失败次数内始终失败，kubelet 会认为容器启动失败并重启容器。
+
+```text
+Startup Probe 成功
+        ↓
+开始执行 Liveness Probe
+开始执行 Readiness Probe
+```
+
+### 2. Liveness Probe：判断是否仍然存活
+
+Liveness Probe 用于发现进程虽然存在，但已经无法正常工作的情况，例如死锁、线程池耗尽或内部状态不可恢复。
+
+连续失败达到阈值后，kubelet 通常会终止容器，并根据 `restartPolicy` 尝试重新启动。
+
+```text
+Liveness Probe 连续失败
+        ↓
+kubelet 判定容器失活
+        ↓
+终止并重启容器
+```
+
+### 3. Readiness Probe：判断是否可以接收流量
+
+Readiness Probe 用于判断应用当前是否具备服务能力，例如依赖的数据库尚未连接、配置尚未加载完成或应用暂时过载。
+
+探测失败时通常不会重启容器，而是：
+
+1. 将容器标记为未就绪；
+2. 将 `ContainersReady` 和 Pod `Ready` 置为 False；
+3. 由 EndpointSlice Controller 将 Pod 从 Service 的可用后端中摘除；
+4. 探测恢复后重新加入可用后端。
+
+### 四种探测方式
+
+#### HTTP Probe
+
+```yaml
+httpGet:
+  path: /ready
+  port: 8080
+```
+
+kubelet 向 Pod IP 的指定端口发送 HTTP 请求。通常返回 `200` 到 `399` 的状态码表示成功。
+
+#### TCP Probe
+
+```yaml
+tcpSocket:
+  port: 8080
+```
+
+kubelet 尝试建立 TCP 连接。它只能说明端口存在监听，不能充分证明业务逻辑正常。
+
+#### Exec Probe
+
+```yaml
+exec:
+  command: ["sh", "-c", "check_ready.sh"]
+```
+
+kubelet 通过 CRI 请求容器运行时在容器环境中执行命令，根据退出码判断探测结果：退出码 `0` 表示成功，非 `0` 表示失败。
+
+#### gRPC Probe
+
+用于实现 gRPC Health Checking Protocol 的服务，检查指定 gRPC 端口和服务状态。
+
+## 六、从创建 Pod 到接收业务流量的简化链路
+
+```text
+用户提交 Pod / Deployment
+        ↓
+API Server 完成认证、鉴权、准入检查并保存期望状态
+        ↓
+Scheduler 选择节点并设置 PodScheduled=True
+        ↓
+kubelet 感知 Pod 配置，创建 Pod Sandbox、Init Container 和业务容器
+        ↓
+容器运行时通过 CRI 返回容器生命周期状态
+        ↓
+kubelet 执行 Startup / Liveness / Readiness Probe
+        ↓
+kubelet 综合容器状态和探测结果，更新 ContainersReady / Ready
+        ↓
+API Server 保存 Pod Status
+        ↓
+EndpointSlice Controller 根据 Pod Ready 状态更新 Service 后端
+        ↓
+Pod 加入 Service 可用 Endpoint，开始接收业务流量
+```
+
+其中，Controller 通常通过 Informer、Reflector、Delta FIFO 和本地缓存监听资源变化；kubelet 负责节点侧的 Pod 同步、容器状态管理和探针执行；CRI 负责连接 kubelet 与具体容器运行时。
+
+## 七、面试中的一句话总结
+
+> **Pod Phase 描述 Pod 的总体阶段，Pod Condition 描述调度、初始化和就绪情况，Container State 描述单个容器的运行状态。CRI 负责报告容器生命周期，kubelet 通过 Probe Manager 执行 Startup、Liveness 和 Readiness Probe，并据此计算 ContainersReady 和 Pod Ready；EndpointSlice Controller 再根据 Pod Ready 状态决定它是否属于 Service 的可用后端。**
+
+最容易记忆的职责划分是：
+
+> **Startup 负责保护启动过程，Liveness 负责发现失活并重启，Readiness 负责判断是否摘除或恢复业务流量。**

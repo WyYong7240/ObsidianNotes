@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "WorkPreparation/简历项目问答/06-千问事业部实习.md",
+                "file": "WorkPreparation/八股与面经/Kubernetes.md",
                 "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "06-千问事业部实习"
+              "title": "Kubernetes"
             }
           }
         ],
@@ -144,7 +144,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "WorkPreparation/简历项目问答/06-千问事业部实习.md",
+                "file": "WorkPreparation/八股与面经/Kubernetes.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -213,8 +213,13 @@
   },
   "active": "3cd8a1446ea2ae52",
   "lastOpenFiles": [
-    "WorkPreparation/简历项目问答/05-KubernetesAgent.md",
+    "WorkPreparation/秋招面试记录/阿里云SRE二面.md",
+    "WorkPreparation/秋招面试记录/科大讯飞SRE二面.md",
+    "WorkPreparation/秋招面试记录/群核科技SRE一面.md",
     "WorkPreparation/简历项目问答/06-千问事业部实习.md",
+    "WorkPreparation/秋招面试记录/百度SRE三面.md",
+    "WorkPreparation/秋招面试记录/阿里云AI SRE一面.md",
+    "WorkPreparation/简历项目问答/05-KubernetesAgent.md",
     "WorkPreparation/简历项目问答/01-国防科技创新特区项目 分布式算网融合高效计算架构.md",
     "WorkPreparation/秋招面试记录/度小满后端开发一面.md",
     "WorkPreparation/秋招面试记录/快手SRE一面.md",
@@ -245,18 +250,13 @@
     "WorkPreparation/AgentKnowledge/assets/sse-websocket/proxy-compatibility.png",
     "WorkPreparation/AgentKnowledge/assets/sse-websocket/interrupt-comparison.png",
     "WorkPreparation/AgentKnowledge/assets/sse-websocket/http-streaming.png",
-    "WorkPreparation/AgentKnowledge/AgentBasic.md",
-    "WorkPreparation/八股与面经/Kubernetes.md",
     "whisper-local/test.txt",
     "whisper-local/test.wav",
     "whisper-local/transcribe.py",
     "whisper-local/requirements.txt",
-    "whisper-local/README.md",
     "whisper-local",
-    "WorkPreparation/笔试/算法.md",
     "WorkPreparation/AgentKnowledge/assets/sse-websocket/ai-transport-selection.png",
     "WorkPreparation/AgentKnowledge/assets/sse-websocket/websocket-scaling.png",
-    "WorkPreparation/AgentKnowledge/ToolCalling.md",
     "DrawIO/限速队列工作流程.svg",
     "GithubProject/MIT6.824-Raft.assets/image-20251219094200861.png",
     "未命名.canvas"
